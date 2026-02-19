@@ -9,11 +9,11 @@ Fill out all of the `TODO`s in this file.
 
 ## SUBMISSION DETAILS
 
-Name: **TODO** \
-SUNet ID: **TODO** \
-Citations: **TODO**
+Name: **Aliya Raffa Naura Ayu**\
+SUNet ID: **N/A** \
+Citations: **Used Cursor IDE with Ollama (Llama 3.1) for code generation and refactoring assistance.**
 
-This assignment took me about **TODO** hours to do. 
+This assignment took me about **4** hours to do. 
 
 
 ## YOUR RESPONSES
@@ -22,12 +22,24 @@ For each exercise, please include what prompts you used to generate the answer, 
 ### Exercise 1: Scaffold a New Feature
 Prompt: 
 ```
-TODO
-``` 
+Add a new FastAPI endpoint POST /extract_llm in week2/app/main.py.
+It should:
+- Accept JSON body with a "text" field
+- Call extract_action_items_llm
+- Return the extracted action items as JSON
+
+Do not modify existing endpoints.
+```
 
 Generated Code Snippets:
 ```
-TODO: List all modified code files with the relevant line numbers.
+File modified: week2/app/main.py
+
+Added:
+- import: from pydantic import BaseModel
+- import: from .services.extract import extract_action_items_llm
+- class ExtractRequest (around lines 24–26)
+- POST /extract_llm endpoint (around lines 29–33)
 ```
 
 ### Exercise 2: Add Unit Tests
