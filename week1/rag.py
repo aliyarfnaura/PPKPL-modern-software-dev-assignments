@@ -37,7 +37,20 @@ QUESTION = (
 
 
 # TODO: Fill this in!
-YOUR_SYSTEM_PROMPT = ""
+YOUR_SYSTEM_PROMPT = """
+You are a Python developer writing code based strictly on provided API documentation.
+
+Rules:
+- Use ONLY the information from the provided context.
+- Use the documented Base URL and endpoint exactly as shown.
+- Send the required authentication header exactly as documented.
+- Use requests.get to call the API.
+- Call raise_for_status() for non-200 responses.
+- Return only the user's name as a string.
+- Output exactly one fenced Python code block.
+- Do not include explanation outside the code block.
+"""
+
 
 
 # For this simple example
@@ -56,7 +69,7 @@ def YOUR_CONTEXT_PROVIDER(corpus: List[str]) -> List[str]:
 
     For example, return [] to simulate missing context, or [corpus[0]] to include the API docs.
     """
-    return []
+    return corpus
 
 
 def make_user_prompt(question: str, context_docs: List[str]) -> str:

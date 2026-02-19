@@ -70,7 +70,31 @@ TOOL_REGISTRY: Dict[str, Callable[..., str]] = {
 # ==========================
 
 # TODO: Fill this in!
-YOUR_SYSTEM_PROMPT = ""
+YOUR_SYSTEM_PROMPT = """
+You are an AI assistant that must call tools using JSON.
+
+When instructed to call a tool:
+- Return ONLY a valid JSON object.
+- Do not explain.
+- Do not add text.
+- Do not wrap in code fences.
+- Do not add commentary.
+
+The JSON format must be:
+
+{
+  "tool": "<tool_name>",
+  "args": {
+    "file_path": ""
+  }
+}
+
+You must call the tool:
+output_every_func_return_type
+
+Return only the JSON.
+"""
+
 
 
 def resolve_path(p: str) -> str:

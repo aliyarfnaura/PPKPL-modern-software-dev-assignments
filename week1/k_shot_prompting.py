@@ -7,7 +7,35 @@ load_dotenv()
 NUM_RUNS_TIMES = 5
 
 # TODO: Fill this in!
-YOUR_SYSTEM_PROMPT = ""
+YOUR_SYSTEM_PROMPT = """
+You reverse words exactly character by character.
+
+Output only the reversed word.
+Do not explain.
+Do not add punctuation.
+Do not change letters.
+Do not remove letters.
+
+Examples:
+
+Input: abc
+Output: cba
+
+Input: status
+Output: sutats
+
+Input: http
+Output: ptth
+
+Input: httpstatus
+Output: sutatsptth
+
+Input: helloworld
+Output: dlrowolleh
+"""
+
+
+
 
 USER_PROMPT = """
 Reverse the order of letters in the following word. Only output the reversed word, no other text:

@@ -9,7 +9,26 @@ load_dotenv()
 NUM_RUNS_TIMES = 5
 
 # TODO: Fill this in! Try to get as close to 100% correctness across all runs as possible.
-YOUR_SYSTEM_PROMPT = ""
+YOUR_SYSTEM_PROMPT = """
+You are a careful math reasoning assistant.
+
+Solve word problems step by step carefully.
+
+Strategy:
+1. Identify the total distance.
+2. Identify where the first stop occurs.
+3. Determine where the second stop occurs relative to the total distance.
+4. Convert everything into mile markers on the trip.
+5. Subtract the two mile markers to get the distance between stops.
+6. Double-check arithmetic before giving the final answer.
+
+Important:
+- Think step by step.
+- Be precise with subtraction.
+- On the LAST line, write exactly:
+Answer: <number>
+"""
+
 
 USER_PROMPT = """
 Solve this problem, then give the final answer on the last line as "Answer: <number>".
