@@ -13,6 +13,10 @@
       .item { display: flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0; }
       .muted { color: #6b7280; font-size: 0.875rem; }
       .row { display: flex; gap: 0.5rem; align-items: center; }
+      .section-title { font-size: 1.1rem; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+      .notes-list { margin-top: 0.5rem; }
+      .note-card { border: 1px solid #e5e7eb; border-radius: 6px; padding: 0.75rem; margin-bottom: 0.5rem; }
+      .note-card p { margin: 0.25rem 0 0; }
     </style>
   </head>
   <body>
@@ -24,13 +28,23 @@
     <div class="row">
       <label class="row"><input id="save_note" type="checkbox" checked /> Save as note</label>
       <button id="extract">Extract</button>
+      <button id="extract_llm">Extract LLM</button>
     </div>
 
     <div class="items" id="items"></div>
 
+    <h2 class="section-title">Notes</h2>
+    <div class="row">
+      <button id="list_notes">List Notes</button>
+    </div>
+    <div class="notes-list" id="notes_list"></div>
+
     <script>
       const $ = (sel) => document.querySelector(sel);
       const itemsEl = $('#items');
+      const notesListEl = $('#notes_list');
+
+      // ----- Existing heuristic extraction -----
       const btn = $('#extract');
       btn.addEventListener('click', async () => {
         const text = $('#text').value;
@@ -67,6 +81,65 @@
         }
       });
 
+      // ----- LLM extraction: POST /extract_llm, show action_items in same area -----
+      const btnLlm = $('#extract_llm');
+      btnLlm.addEventListener('click', async () => {
+        const text = $('#text').value;
+        itemsEl.textContent = 'Extracting with LLM...';
+        try {
+          const res = await fetch('/extract_llm', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text }),
+          });
+          if (!res.ok) {
+            const errBody = await res.text();
+            throw new Error(errBody || 'Request failed');
+          }
+          const data = await res.json();
+          const actionItems = data.action_items || [];
+          if (actionItems.length === 0) {
+            itemsEl.innerHTML = '<p class="muted">No action items found.</p>';
+            return;
+          }
+          itemsEl.innerHTML = actionItems.map(t => (
+            `<div class="item"><span>${escapeHtml(t)}</span></div>`
+          )).join('');
+        } catch (err) {
+          console.error(err);
+          itemsEl.innerHTML = '<p class="muted">Error: ' + escapeHtml(err.message || 'Request failed') + '</p>';
+        }
+      });
+
+      // ----- List notes: GET /notes, render in UI without page refresh -----
+      const btnListNotes = $('#list_notes');
+      btnListNotes.addEventListener('click', async () => {
+        notesListEl.textContent = 'Loading...';
+        try {
+          const res = await fetch('/notes');
+          if (!res.ok) throw new Error('Failed to load notes');
+          const notes = await res.json();
+          if (!notes || notes.length === 0) {
+            notesListEl.innerHTML = '<p class="muted">No notes yet.</p>';
+            return;
+          }
+          notesListEl.innerHTML = notes.map(n => (
+            '<div class="note-card">' +
+            '<span class="muted">#' + n.id + ' · ' + escapeHtml(n.created_at) + '</span>' +
+            '<p>' + escapeHtml(n.content) + '</p>' +
+            '</div>'
+          )).join('');
+        } catch (err) {
+          console.error(err);
+          notesListEl.innerHTML = '<p class="muted">Error: ' + escapeHtml(err.message || 'Failed to load notes') + '</p>';
+        }
+      });
+
+      function escapeHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+      }
     </script>
   </body>
   </html>

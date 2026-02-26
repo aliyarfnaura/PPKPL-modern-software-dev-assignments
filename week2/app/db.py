@@ -1,9 +1,15 @@
+"""
+Database layer: SQLite access for notes and action items.
+
+All DB access for the app goes through this module so business logic stays separate.
+"""
 from __future__ import annotations
 
 import sqlite3
 from pathlib import Path
 from typing import Optional
 
+# ----- Configuration -----
 
 BASE_DIR = Path(__file__).resolve().parents[1]
 DATA_DIR = BASE_DIR / "data"
@@ -11,10 +17,12 @@ DB_PATH = DATA_DIR / "app.db"
 
 
 def ensure_data_directory_exists() -> None:
+    """Create the data directory if it does not exist."""
     DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def get_connection() -> sqlite3.Connection:
+    """Return a connection to the app database; rows are returned as sqlite3.Row."""
     ensure_data_directory_exists()
     connection = sqlite3.connect(DB_PATH)
     connection.row_factory = sqlite3.Row
@@ -22,6 +30,7 @@ def get_connection() -> sqlite3.Connection:
 
 
 def init_db() -> None:
+    """Create notes and action_items tables if they do not exist. Safe to call at startup."""
     ensure_data_directory_exists()
     with get_connection() as connection:
         cursor = connection.cursor()
@@ -49,7 +58,10 @@ def init_db() -> None:
         connection.commit()
 
 
+# ----- Notes -----
+
 def insert_note(content: str) -> int:
+    """Insert a note and return its id."""
     with get_connection() as connection:
         cursor = connection.cursor()
         cursor.execute("INSERT INTO notes (content) VALUES (?)", (content,))
@@ -58,6 +70,7 @@ def insert_note(content: str) -> int:
 
 
 def list_notes() -> list[sqlite3.Row]:
+    """Return all notes, newest first."""
     with get_connection() as connection:
         cursor = connection.cursor()
         cursor.execute("SELECT id, content, created_at FROM notes ORDER BY id DESC")
@@ -65,6 +78,7 @@ def list_notes() -> list[sqlite3.Row]:
 
 
 def get_note(note_id: int) -> Optional[sqlite3.Row]:
+    """Return a single note by id, or None if not found."""
     with get_connection() as connection:
         cursor = connection.cursor()
         cursor.execute(
@@ -75,7 +89,10 @@ def get_note(note_id: int) -> Optional[sqlite3.Row]:
         return row
 
 
+# ----- Action items -----
+
 def insert_action_items(items: list[str], note_id: Optional[int] = None) -> list[int]:
+    """Insert action items, optionally linked to a note; returns list of new ids."""
     with get_connection() as connection:
         cursor = connection.cursor()
         ids: list[int] = []
@@ -90,6 +107,7 @@ def insert_action_items(items: list[str], note_id: Optional[int] = None) -> list
 
 
 def list_action_items(note_id: Optional[int] = None) -> list[sqlite3.Row]:
+    """Return action items, optionally filtered by note_id; newest first."""
     with get_connection() as connection:
         cursor = connection.cursor()
         if note_id is None:
@@ -105,6 +123,7 @@ def list_action_items(note_id: Optional[int] = None) -> list[sqlite3.Row]:
 
 
 def mark_action_item_done(action_item_id: int, done: bool) -> None:
+    """Set the done flag for an action item by id."""
     with get_connection() as connection:
         cursor = connection.cursor()
         cursor.execute(
