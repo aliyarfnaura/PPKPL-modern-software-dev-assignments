@@ -20,7 +20,7 @@ week3/
 │   ├── main.py          # MCP server entrypoint
 │   ├── .env             # API key (not committed to git)
 │   ├── venv/            # Python virtual environment
-│   └── requirements.txt
+├── assignment.md            
 └── README.md
 ```
 
@@ -251,14 +251,45 @@ Retrieve the top 5 highest-rated movies of all time from TMDB.
 
 ---
 
+### `search_movie_by_genre`
+
+Search top 5 popular movies by genre.
+
+| Parameter | Type   | Required | Description |
+|-----------|--------|----------|-------------|
+| `genre`   | string | Yes      | Genre name (see available genres below) |
+
+**Available genres:** action, adventure, animation, comedy, crime, documentary, drama, family, fantasy, history, horror, music, mystery, romance, sci-fi, thriller, war, western
+
+**Example input:**
+> "cari film genre horror" / "tampilkan film action populer"
+
+**Example output:**
+```json
+[
+  { "title": "Venom: The Last Dance", "release_date": "2024-10-22", "rating": 6.8 },
+  { "title": "Deadpool & Wolverine", "release_date": "2024-07-24", "rating": 7.7 },
+  { "title": "Gladiator II", "release_date": "2024-11-13", "rating": 6.9 },
+  { "title": "Kraven the Hunter", "release_date": "2024-12-12", "rating": 6.1 },
+  { "title": "Captain America: Brave New World", "release_date": "2025-02-12", "rating": 6.2 }
+]
+```
+
+**Error cases:**
+- Empty genre → `{"error": "Genre is required"}`
+- Unknown genre → `{"error": "Genre 'X' tidak dikenali. Genre yang tersedia: ..."}`
+
+---
+
 ## TMDB API Endpoints Used
 
-| Tool               | Endpoint                    |
-|--------------------|-----------------------------|
-| `search_movie`     | `GET /search/movie`         |
-| `get_popular_movies` | `GET /movie/popular`      |
-| `get_now_playing`  | `GET /movie/now_playing`    |
-| `get_top_rated`    | `GET /movie/top_rated`      |
+| Tool                   | Endpoint                    |
+|------------------------|-----------------------------|
+| `search_movie`         | `GET /search/movie`         |
+| `get_popular_movies`   | `GET /movie/popular`        |
+| `get_now_playing`      | `GET /movie/now_playing`    |
+| `get_top_rated`        | `GET /movie/top_rated`      |
+| `search_movie_by_genre`| `GET /discover/movie`       |
 
 Base URL: `https://api.themoviedb.org/3`
 
@@ -273,7 +304,7 @@ Base URL: `https://api.themoviedb.org/3`
    - `"tampilkan film populer"` → triggers `get_popular_movies`
    - `"film apa yang sedang tayang di bioskop"` → triggers `get_now_playing`
    - `"tampilkan film dengan rating tertinggi sepanjang masa"` → triggers `get_top_rated`
-   - `"tampilkan film horror populer"` → triggers `search_movie_by_genre`
+   - `"cari film genre thriller"` → triggers `search_movie_by_genre`
 4. Claude will call the MCP tool and return results from TMDB API directly
 
 ---
